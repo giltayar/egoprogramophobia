@@ -112,6 +112,42 @@ The test is mostly easy to follow. `cy.get` enables you to "get" a DOM element, 
 
 This is usually how tests are constructed: actions, validations, actions, validations. It is common practice for each set of actions + validations to have their own test, but this is NOT true for E2E tests. There should be as few E2E tests as possible, and they should follow a user use-case, which could mean many pages of interactions. It's fine. That's what E2E tests are for. They are not supposed to be the tool you use to test _everything_. Rather they are there just to ensure that all the unit and integration tests, when run in a browser, all together, actually _do_ work. So remember—if you have too many E2E tests, and running them take more than a minute, then you have too many of them and you should be replacing some of them with unit or integration tests.
 
-So it's time. Time to write unit tests.
+But enough theory. How do we run the tests? The best and simmplest way is to use [npm scripts](https://deliciousbrains.com/npm-build-script/). First, we write an npm script that opens cypress (in `package.json`):
+
+```js
+  "scripts": {
+    // ...
+    "cypress:open": "cypress open",
+    //...
+  }
+```
+
+If we do `npm run cypress:open`, cypress will be opened and we will be able to run the test. But there is a slight problem—the test assumes that the server runs and is serving the application. We need something that runs the server and then runs the test.
+
+Fortunately, if we `npm install --save-dev start-server-and-test` (built by @bahmutov, one of the co-writers of Cypress), we can do exactly that—start the server and run the test, using:
+
+```json
+  "scripts": {
+    //...
+    "start": "serve -s dist",
+    "cypress:open": "cypress open",
+    "test:open": "start-server-and-test start http://localhost:5000 cypress:open",
+    //...
+  }
+```
+
+Now if we `npm run test:open`, we can run our e2e test. If you want to run it without human, interaction, use:
+
+```json
+  "scripts": {
+    "start": "serve -s dist",
+    "cypress:run": "cypress run",
+    "test": "start-server-and-test start http://localhost:5000 cypress:run",
+  }
+```
+
+And just run `npm test`, which is the canonical way to run all the tests in a package.
+
+Done with e2e testing? It's time for those units.
 
 ## The Unit Developer
