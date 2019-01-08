@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 'use strict'
 
-it('should add todos, and complete them', async () => {
+it('should add todos, and complete them', () => {
   cy.visit('http://localhost:5000')
 
   // Add todos
@@ -21,6 +21,6 @@ it('should add todos, and complete them', async () => {
 
   // Filter on active todos
   cy.contains('Active').click()
-  // Validate that it was
+  // Validate that it was completed
   cy.get('.todo-list > li').should('have.length', 2)
 })
