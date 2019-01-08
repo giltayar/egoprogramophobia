@@ -4,5 +4,6 @@
       "chrome": "68",
       "firefox": "60"
     }
-  }], "@babel/preset-react"]
+  }], "@babel/preset-react"],
+  "plugins": ["@babel/plugin-transform-react-jsx"]
 }

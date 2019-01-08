@@ -224,6 +224,15 @@ But let's go to the most interesting tests of all: integration tests.
 
 ## The Integration Developer
 
+There are two types of integration tests, so if you talk to somebody about them, make sure you are both talking of the same type of tests:
+
+* Tests that check your code's integration with an external service such as your backend service, or Firebase, or an OAuth provider.
+* Tests that check multiple units together.
+
+The tests I'm going to show now are a bit of both. They both check multiple units together, and also test them
+inside the DOM. We're going to test our components. Specifically the...
+
+
 ## The Strategic Developer
 
 * Not too many
@@ -231,9 +240,11 @@ But let's go to the most interesting tests of all: integration tests.
 * Try not to run your code. Develop through tests
 * It doesn't have to be TDD
 * It doesn't have to be Jest, or Mocha, or Cypress, or Selenium WebDriver
+* There are fanatics out there. Don't listen to them. Choose your own path.
+* There's a lot too learn. Don't despair. Learn. It takes a year or two of testing to become proficient.
+* No big projects
 
-
-## Overcoming EgoProgramophobia
+## Overcoming Egoprogramophobia
 
 > I must not fear. Fear is the mind-killer. Fear is the little-death that brings total
 > obliteration. I will face my fear. I will permit it to pass over me and through me. And
