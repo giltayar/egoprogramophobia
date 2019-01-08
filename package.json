@@ -6,6 +6,10 @@
   "scripts": {
     "start": "serve -s dist",
     "build": "webpack && cp public/* dist",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test:open": "start-server-and-test start http://localhost:5000 cypress:open",
+    "test": "start-server-and-test start http://localhost:5000 cypress:run",
     "deploy": "surge ./dist egoprogramophobia.surge.sh"
   },
   "repository": {
@@ -32,6 +36,7 @@
     "cypress": "^3.1.4",
     "raw-loader": "^1.0.0",
     "serve": "^10.1.1",
+    "start-server-and-test": "^1.7.11",
     "style-loader": "^0.23.1",
     "surge": "^0.20.1",
     "todomvc-app-css": "^2.0.1",
