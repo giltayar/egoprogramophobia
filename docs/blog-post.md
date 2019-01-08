@@ -290,14 +290,30 @@ These tests, because they're not running in the browser are _crazy_ fast. You ca
 
 ## The Strategic Developer
 
-* Not too many
-* Accrue over time due to bugs
-* Try not to run your code. Develop through tests
-* It doesn't have to be TDD
-* It doesn't have to be Jest, or Mocha, or Cypress, or Selenium WebDriver
-* There are fanatics out there. Don't listen to them. Choose your own path.
-* There's a lot too learn. Don't despair. Learn. It takes a year or two of testing to become proficient.
-* No big projects
+There. We've covered the three main kinds of tests that happen in the frontend world: unit, integration, and e2e. Not too bad, huh? Well, yes. But here's a few tips before we go:
+
+* **Not too many**: write tests, but don't stress on coverage. Don't try to kill yourself with _too_ many tests.
+  So how many tests? Well, till you don't shake on deployment. Use this deployment shakometer test to understand
+  whether you have enough tests.
+* **Confidence grows with time**: and don't worry if you initially feel that you don't have enough. Your users,
+  and your bugs, will tell you when you have enough. And if you don't have enough, that production bug will
+  show you where you lack tests. The rule: for each bug you find, add at least one test.
+* **Run your code manually as little as possible**: wrote a feature? Don't test it manually. Try to test it as
+  much as you can with tests. Of course, some frontend features are difficult to test without trying them
+  manually, but try to do this as much as possible.
+* **It doesn't have to be TDD**: many will try and convince you that TDD is the way to go. If it works for you,
+  that's fine. But if it doesn't (and it doesn't for me), then that's fine too. It's the tests that are important,
+  and not when and how you wrote them.
+* **The tools don't matter**: Mocha or Jest? Selenium or Cypress? Choose whatever you like. They're all good. It's
+  the tests that are important, and not the tool. But do try and choose a tool that is commonly used and
+  not esoteric please...
+* **There are fanatics out there**: don't listen to them. Choose your own path.
+* **There's a lot too learn**: don't despair. Learn. It takes a year or two of testing to become proficient.
+  Really. A year or two. Don't rush it.
+* **No big projects**: the worst thing you can do is to start a "big test project" where you stop everything
+  and write tests for everything. Stop! It'll never work. Work _in parallel_ with development. Start small,
+  with one e2e test. Gain confidence and gain understanding in how to test your code, and how to write
+  your code to be testable. Good coverage takes time. A year or two. Really. A year or two. Don't rush it.
 
 ## Overcoming Egoprogramophobia
 
@@ -307,3 +323,6 @@ These tests, because they're not running in the browser are _crazy_ fast. You ca
 > there will be nothing. Only I will remain.<br>
 > -- [Dune, Frank Herbert](https://www.goodreads.com/book/show/234225.Dune)
 
+Hopefully, this post will help you overcome your EgoProgramophobia. At least put you on the path to it.
+
+Good luck!
