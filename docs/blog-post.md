@@ -151,3 +151,12 @@ And just run `npm test`, which is the canonical way to run all the tests in a pa
 Done with e2e testing? It's time for those units.
 
 ## The Unit Developer
+
+
+## The Strategic Developer
+
+* Not too many
+* Accrue over time due to bugs
+* Try not to run your code. Develop through tests
+* It doesn't have to be TDD
+* It doesn't have to be Jest, or Mocha, or Cypress
