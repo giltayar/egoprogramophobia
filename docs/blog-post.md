@@ -216,7 +216,7 @@ How do run the test? We add an "npm script": `"test:mocha": "mocha test/unit/*.t
 
 Note an important thing here: the tests **are running under NodeJS**. While their final destination is the browser, NodeJS can run the code as well. And we use the fact that 99% of the code in our source is isomorphic, i.e. runs in both the browser and in NodeJS.
 
-But NodeJS doesn't understand `import` statements, so we install the wonderful `esm` module, and require it at the start of the test, using `mocha -r esm test/unit/*.test.js`. This requires the esm module, which will transpile the `import` statements to NodeJS `require` statements, and everything will work transparently.
+But NodeJS doesn't understand `import` statements! What do we do? We use the wonderful `@babel/register`, and require it at the start of the test, using `mocha -r esm test/unit/*.test.js`. This requires the esm module, which will transpile the `import` statements to NodeJS `require` statements, and everything will work transparently. And it's using the same configuration that we're using to transpile the code in the browser, so it's perfect!
 
 Unit tests are the easiest: if you can test a function using unit tests, do it! It's the highest ROI of them all, and remember—you can run thousands of unit tests in seconds.
 
@@ -230,8 +230,63 @@ There are two types of integration tests, so if you talk to somebody about them,
 * Tests that check multiple units together.
 
 The tests I'm going to show now are a bit of both. They both check multiple units together, and also test them
-inside the DOM. We're going to test our components. Specifically the...
+inside the DOM. We're going to test our components. Specifically we're going to test the app, but without using a browser. And we're going to test them in NodeJS, using a wonderful library called `jsdom`.
 
+The idea, usually, is not to test the whole app, but rather any subset of the app that makes sense. But I have limited space for testing a subset, so I'll do the simple thing (in this redux app), and just test it all:
+
+```js
+import {describe, it} from 'mocha'
+import {expect} from 'chai'
+import {JSDOM} from 'jsdom'
+import {render} from 'react-dom'
+import React from 'react'
+import {Provider} from 'react-redux'
+import {fireEvent} from 'dom-testing-library'
+
+import App from '../../containers/App'
+import configureStore from '../../store/configureStore'
+
+describe('App', function() {
+  let $, $$
+  beforeEach(() => {
+    global.window = new JSDOM('<div id="root"></div>').window
+    global.document = window.document
+    $ = document.querySelector.bind(document)
+    $$ = document.querySelectorAll.bind(document)
+  })
+
+  it('initial list contains no todos', async () => {
+    // render the React App
+    const store = configureStore()
+    render(<Provider store={store}><App /></Provider>, document.getElementById('root'))
+
+    // Validate empty todo list
+    expect($$('.todo-list > li')).to.have.length(0)
+  })
+
+  it('should be able to add a todo', async () => {
+    // render the React App
+    const store = configureStore()
+    render(<Provider store={store}><App /></Provider>, document.getElementById('root'))
+
+    // Enter "Clean House" in "new todo"
+    fireEvent.change($('.new-todo'), {target: {value: 'Clean House'}})
+    fireEvent.keyDown($('.new-todo'), {key: 'Enter', keyCode: 13})
+
+    // Validate it's there
+    expect([...$$('.todo-list > li')]).to.have.length(1)
+    expect($(':nth-child(1) > .view > label').textContent).to.equal('Clean House')
+  })
+})
+```
+
+Let's first note the `beforEach`. This is a Mocha function that runs before each test. Here is where we initialize our jsdom. JSDOM is a simulation of a browser's `window` and `document`, which actually works, and can "fool" React and most frontend code in thinking that it's running in a browser. We're also initializing `$` and `$$` to be nice and friendly when we use them in the test.
+
+The first test just checks that the todo list is initially empty. Because this is a Redux app, we need to create a Redux "store", which is what `configureStore` does. Then we use React to render the application into the DOM. Then we check the DOM—is the todo list empty? The number of `li`-s in it should be 0.
+
+The next test starts from zero, and renders the app as above. Then it changes the "New Todo" input element using Kent C. Dodd's wonderful [DOM Testing Library](https://testing-library.com/). Validation is checking that the new todo element exists in the list.
+
+These tests, because they're not running in the browser are _crazy_ fast. You can run thousands of them in under a minute. That is the power of frontend integration tests using JSDOM. You can test lots of functionality in your code, with very little code and very little bureaucracy. We didn't even run a server to test the app. And we don't have to test the whole application. We can test any subset of components we want, and that is what you should usually do.
 
 ## The Strategic Developer
 
