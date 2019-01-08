@@ -1,6 +1,9 @@
+<!-- markdownlint-disable MD033 -->
+
 # Egoprogramophobia, or fear of one's own code: how testing can change your life
 
 ## The Young Developer
+
 > When I was young, it seemed that life was so wonderful<br>
 > A miracle, oh it was beautiful, magical<br>
 > And all the birds in the trees, well they'd be singing so happily<br>
@@ -126,7 +129,7 @@ If we do `npm run cypress:open`, cypress will be opened and we will be able to r
 
 Fortunately, if we `npm install --save-dev start-server-and-test` (built by @bahmutov, one of the co-writers of Cypress), we can do exactly that—start the server and run the test, using:
 
-```json
+```js
   "scripts": {
     //...
     "start": "serve -s dist",
@@ -138,7 +141,7 @@ Fortunately, if we `npm install --save-dev start-server-and-test` (built by @bah
 
 Now if we `npm run test:open`, we can run our e2e test. If you want to run it without human, interaction, use:
 
-```json
+```js
   "scripts": {
     "start": "serve -s dist",
     "cypress:run": "cypress run",
@@ -148,10 +151,78 @@ Now if we `npm run test:open`, we can run our e2e test. If you want to run it wi
 
 And just run `npm test`, which is the canonical way to run all the tests in a package.
 
-Done with e2e testing? It's time for those units.
+Done with e2e testing? It's time for those unit tests.
 
 ## The Unit Developer
 
+What are unit tests? We've seen End to End tests, which are tests that test the _whole_ application. Unit tests are on the other end of the spectrum—they test only one unit of code, be it a class, a function, or a module.
+
+Unit tests are the basics of testing. I've heard developers boast that they "have tests", and then you find that its mostly unit tests. That's great! But it's not enough. Some schools of testing emphasis unit tests, and believe that most of your tests should be unit tests. I tend to emphasize integration tests, but hey, as long as you have all these tests, that's OK.
+
+My unit tests tend to test functions that are simple to test, i.e. functions (or classes), that have a very defined input, do something very specific, and have a very specific output. Also, what I test _usually_ doesn't depend on other units, or depend on them in a very small manner. If your units depend on a lot of other units, try and break them so they are not dependent, and if not possible—use mocks (which are out of scope for this article).
+
+A classical thing to unit test is a reducer (in React/Redux). This is a simple function that embodies the business logic related to changing the test. Let's test the ["todo" reducer](https://github.com/giltayar/egoprogramophobia/blob/master/reducers/todos.js):
+
+```js
+import {expect}  from 'chai'
+import reducer from '../../reducers/todos'
+import {ADD_TODO, DELETE_TODO, COMPLETE_TODO} from '../../constants/ActionTypes'
+
+describe('todo reducers', function() {
+  it('should ADD_TODO', () => {
+    const newState = reducer([], {type: ADD_TODO, text: 'Clean House'})
+
+    expect(newState).to.eql([{id : 0, completed: false, text: 'Clean House'}])
+  })
+
+  it('should DELETE_TODO', () => {
+    const todoAddedState = [
+      {id : 4, completed: false, text: 'Clean House'},
+      {id : 5, completed: false, text: 'Write Tests'}
+    ]
+
+    const todoDeletedState = reducer(todoAddedState, {type: DELETE_TODO, id: 4})
+
+    expect(todoDeletedState).to.eql([{id : 5, completed: false, text: 'Write Tests'}])
+  })
+
+  it('should COMPLETE_TODO', () => {
+    const todoAddedState = [
+      {id : 4, completed: false, text: 'Clean House'},
+      {id : 5, completed: false, text: 'Write Tests'}
+    ]
+
+    const todoCompletedState = reducer(todoAddedState, {type: COMPLETE_TODO, id: 5})
+
+    expect(todoCompletedState).to.eql([
+      {id : 4, completed: false, text: 'Clean House'},
+      {id : 5, completed: true, text: 'Write Tests'}
+    ])
+  })
+})
+```
+
+Notice the `it` function? Yup, we're using Mocha as our testing framework. Feel free to use Jest, Tape, Ava, or whatever you like. It doesn't matter, and don't let the horde of fanatics convince you otherwise!
+
+We've added `describe`, which is Mocha's way of grouping tests together, but otherwise, it's the same Mocha as in the Cypress tests. But this time, we're running it, so we need to install it (and chai, which is the validation library used for the `expect`).
+
+```sh
+npm install --save-dev mocha chai
+```
+
+But the tests are similar to the E2E, in that they follow the "actions, validations" formula. In this case, calling the reducer is the action, and the validation is checking that the resulting state is valid.
+
+How do run the test? We add an "npm script": `"test:mocha": "mocha test/unit/*.test.js"`.
+
+Note an important thing here: the tests **are running under NodeJS**. While their final destination is the browser, NodeJS can run the code as well. And we use the fact that 99% of the code in our source is isomorphic, i.e. runs in both the browser and in NodeJS.
+
+But NodeJS doesn't understand `import` statements, so we install the wonderful `esm` module, and require it at the start of the test, using `mocha -r esm test/unit/*.test.js`. This requires the esm module, which will transpile the `import` statements to NodeJS `require` statements, and everything will work transparently.
+
+Unit tests are the easiest: if you can test a function using unit tests, do it! It's the highest ROI of them all, and remember—you can run thousands of unit tests in seconds.
+
+But let's go to the most interesting tests of all: integration tests.
+
+## The Integration Developer
 
 ## The Strategic Developer
 
@@ -159,4 +230,14 @@ Done with e2e testing? It's time for those units.
 * Accrue over time due to bugs
 * Try not to run your code. Develop through tests
 * It doesn't have to be TDD
-* It doesn't have to be Jest, or Mocha, or Cypress
+* It doesn't have to be Jest, or Mocha, or Cypress, or Selenium WebDriver
+
+
+## Overcoming EgoProgramophobia
+
+> I must not fear. Fear is the mind-killer. Fear is the little-death that brings total
+> obliteration. I will face my fear. I will permit it to pass over me and through me. And
+> when it has gone past I will turn the inner eye to see its path. Where the fear has gone
+> there will be nothing. Only I will remain.<br>
+> -- [Dune, Frank Herbert](https://www.goodreads.com/book/show/234225.Dune)
+

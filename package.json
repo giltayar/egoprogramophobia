@@ -9,8 +9,9 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "test:open": "start-server-and-test start http://localhost:5000 cypress:open",
-    "test": "start-server-and-test start http://localhost:5000 cypress:run",
+    "test:cypress": "start-server-and-test start http://localhost:5000 cypress:run",
     "test:mocha": "mocha -r esm test/unit/*.test.js",
+    "test": "npm run test:mocha && npm run test:cypress",
     "deploy": "surge ./dist egoprogramophobia.surge.sh"
   },
   "repository": {
